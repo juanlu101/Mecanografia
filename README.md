@@ -128,29 +128,6 @@ De dónde salen los datos:
 
 ---
 
-## Antes de usarlo con todos los grupos
-
-- **Prueba piloto**: úsalo una semana con un solo grupo. La app se ha probado en un navegador automático, pero conviene comprobarla en vuestros ordenadores reales (teclados, Chromebooks, Mac o Firefox si los hay; las tildes son lo más delicado) y con el script de Google real y una clase entera escribiendo a la vez.
-- **Protección de datos**: la hoja guarda nombres de alumnos menores y sus PIN en la cuenta de Google donde instales el script. Consulta con dirección o con el delegado de protección de datos del centro si puede ser tu cuenta personal o debe ser la del centro. Si hay dudas, los alumnos pueden registrarse con su nombre y la inicial del apellido.
-
----
-
-## Publicar en GitHub Pages
-
-1. Crea una cuenta en [github.com](https://github.com) (si no la tienes).
-2. Pulsa **New repository**, ponle un nombre (por ejemplo `teclea`) y márcalo como **Public**.
-3. En el repositorio recién creado: **Add file → Upload files**. Arrastra **todo el contenido** de esta carpeta (`index.html`, `css/`, `js/`, etc.) y pulsa **Commit changes**.
-   `index.html` debe quedar en la raíz del repositorio, no dentro de otra carpeta.
-4. Ve a **Settings → Pages**. En *Build and deployment* elige **Source: Deploy from a branch**, rama **main** y carpeta **/ (root)**. Guarda.
-5. En uno o dos minutos la web estará en:
-   `https://TU-USUARIO.github.io/teclea/`
-
-Para actualizarla, sube los archivos modificados de la misma forma.
-
-**Probar en tu ordenador**: basta con abrir `index.html` con doble clic.
-
----
-
 ## Cómo se guarda el progreso
 
 Hay tres niveles. El 1 y el 2 funcionan siempre; el 3 es opcional.
@@ -167,39 +144,6 @@ Desde **Guardar / llevar progreso**, el alumno puede copiar un código (empieza 
 
 ### 3. Google Sheets (opcional, recomendado para el aula)
 
-Con esto:
-
-- Ves en una hoja de cálculo **todos los resultados de todos los alumnos** (hoja *Resultados*, incluidos los textos de la escritura libre) y un resumen por alumno (hoja *Progreso*), y puedes usar el panel del profesor/a con todos ellos.
-- El alumno **recupera su progreso en cualquier ordenador** escribiendo su nombre, grupo y PIN.
-- **Si no hay conexión o Google está saturado** al terminar una lección, el resultado queda guardado como pendiente y se reenvía solo hasta que la hoja confirma que lo ha recibido (el mapa muestra cuántos hay pendientes). Para no saturar Google con una clase entera, el ranking se actualiza como mucho cada 3 minutos.
-
-Configuración (unos 5 minutos):
-
-1. Crea una hoja de cálculo nueva en Google Drive (por ejemplo «Teclea – 3º B»).
-2. Menú **Extensiones → Apps Script**.
-3. Borra lo que aparezca y pega el contenido de `google-apps-script/Code.gs`.
-4. **Cambia la clave** de la línea `const CLAVE_PROFESOR = 'cambia-esta-clave';`. Guarda (icono del disquete).
-5. Pulsa **Implementar → Nueva implementación**.
-   - Tipo (rueda dentada): **Aplicación web**.
-   - *Ejecutar como*: **Yo**.
-   - *Quién tiene acceso*: **Cualquier usuario**.
-   - Pulsa **Implementar** y autoriza los permisos (Google avisará de que la app no está verificada: *Configuración avanzada → Ir a…*; es tu propio script).
-6. Copia la **URL de la aplicación web** (termina en `/exec`).
-7. Abre `js/config.js` y pégala en `SYNC_URL`:
-   ```js
-   SYNC_URL: "https://script.google.com/macros/s/AKfy.../exec"
-   ```
-8. Sube el `config.js` modificado a GitHub.
-
-Las hojas *Resultados* y *Progreso* se crean solas con el primer alumno.
-
-Notas:
-
-- Si modificas `Code.gs` (por ejemplo, para cambiar la clave), haz **Implementar → Gestionar implementaciones → Editar → Nueva versión** para que se apliquen los cambios.
-- **Si ya tenías instalada una versión anterior de `Code.gs`**: pega el código nuevo (conservando tu `CLAVE_PROFESOR`), guarda y haz **Implementar → Gestionar implementaciones → lápiz → Versión: Nueva versión → Implementar**. La URL no cambia y no hay que borrar nada: las columnas nuevas de la hoja *Progreso* y la hoja *Grupos* se crean solas.
-- Los datos (nombre, grupo y resultados) quedan en tu cuenta de Google, no en ningún servidor externo.
-
----
 
 ## Personalizar
 
