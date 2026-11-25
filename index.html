@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Teclea · Mecanografía paso a paso</title>
+  <meta name="author" content="Juan Luis Torralbo Muñoz">
+  <meta name="description" content="Aprende mecanografía desde cero: cada tecla con su dedo, por niveles.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⌨️</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<div class="touch-warning" id="touch-warning" hidden>
+  <b>Esta aplicación necesita un teclado físico.</b>
+  En una tableta o un móvil sin teclado no se puede practicar. Conecta un teclado o usa un ordenador.
+  <button class="link" type="button" id="touch-dismiss">Tengo teclado</button>
+</div>
+
+<main id="app">
+
+  <!-- ============ 1. ELEGIR ALUMNO ============ -->
+  <section id="screen-profiles" class="screen">
+    <div class="welcome">
+      <div class="brand"><span class="logo">T</span>Teclea</div>
+      <h1>Aprende a escribir<br>con <em>todos</em> los dedos</h1>
+      <p class="lead">Elige tu nombre para seguir donde lo dejaste.</p>
+      <p class="idle-msg" id="idle-msg" hidden></p>
+
+      <div class="list-filter" id="list-filter" hidden>
+        <label>Mi grupo <select id="pf-group"></select></label>
+      </div>
+      <ul id="profile-list" class="profile-list"></ul>
+
+      <form id="new-profile" class="card form" autocomplete="off">
+        <h2 id="new-title">Entrar con mi nombre</h2>
+        <p class="small" id="new-sub">Escribe tu nombre y tu grupo exactamente igual cada vez.</p>
+        <label>Nombre y apellidos
+          <input name="name" required maxlength="40" placeholder="Ej.: Lucía Pérez Gil">
+        </label>
+        <label>Clase o grupo
+          <select name="group" required></select>
+        </label>
+        <label>PIN secreto (5 números)
+          <input name="pin" required inputmode="numeric" pattern="[0-9]{4,5}" maxlength="5" placeholder="•••••" autocomplete="off" class="pin-input">
+          <small>Para que nadie más pueda usar tu perfil. ¡No lo olvides!</small>
+        </label>
+        <button class="btn primary" type="submit">Entrar</button>
+        <p class="form-msg" id="new-msg" aria-live="polite"></p>
+      </form>
+
+      <div class="start-links">
+        <button class="link" id="btn-import-start" type="button">Tengo un código de progreso</button>
+        <button class="link" id="btn-teacher" type="button">Acceso profesor/a</button>
+      </div>
+      <p class="footnote" id="storage-note"></p>
+    </div>
+  </section>
+
+  <!-- ============ 2. MAPA DE LECCIONES ============ -->
+  <section id="screen-map" class="screen" hidden>
+    <header class="topbar">
+      <div class="brand small"><span class="logo">T</span>Teclea</div>
+      <div class="who" id="who"></div>
+      <div class="top-actions">
+        <button class="btn ghost" id="btn-free" type="button">Práctica libre y pruebas</button>
+        <button class="btn ghost" id="btn-review" type="button">Repaso personalizado</button>
+        <button class="btn ghost" id="btn-export" type="button">Guardar / llevar progreso</button>
+        <button class="btn ghost" id="btn-switch" type="button">Salir</button>
+      </div>
+    </header>
+
+    <div class="summary" id="summary"></div>
+    <div class="daily" id="daily"></div>
+
+    <section class="ranking card" id="ranking" hidden>
+      <header>
+        <div><h3>🏆 Ranking de la semana</h3><p>Se reinicia cada lunes · <span id="rank-mine"></span></p></div>
+        <div class="rank-tabs"><button type="button" data-tab="clase">Mi clase</button><button type="button" data-tab="clases">Clases</button></div>
+      </header>
+      <div id="rank-body"></div>
+      <details class="rank-how">
+        <summary>¿Cómo se ganan puntos?</summary>
+        <ul>
+          <li><b>10 puntos por minuto</b> de práctica (máximo 300 al día).</li>
+          <li><b>+10</b> por cada estrella nueva que consigas.</li>
+          <li><b>+50</b> por cada lección superada.</li>
+          <li><b>+20</b> al cumplir el objetivo del día, y <b>+5 más por cada día de racha</b> (hasta +50).</li>
+          <li>Solo cuentan los ejercicios con <b>al menos un 90 % de precisión</b>: correr sin acertar no da puntos.</li>
+        </ul>
+      </details>
+    </section>
+
+    <details class="settings" id="settings">
+      <summary>Ajustes</summary>
+      <label><input type="checkbox" data-setting="kb"> Mostrar el teclado en pantalla</label>
+      <label><input type="checkbox" data-setting="hands"> Mostrar las manos</label>
+      <label><input type="checkbox" data-setting="sound"> Sonido al equivocarse</label>
+      <button class="link" type="button" id="btn-change-pin">Cambiar mi PIN</button>
+    </details>
+
+    <div id="stages" class="stages"></div>
+
+    <section class="heat-section card" id="heat-section">
+      <header>
+        <h3>Tus teclas</h3>
+        <p>Cuanto más roja, más te equivocas con ella. Las grises aún no tienen suficientes pulsaciones.</p>
+      </header>
+      <div id="heat" class="kb-heat"></div>
+      <div class="heat-legend"><span>Pocos errores</span><i></i><span>Muchos errores</span></div>
+    </section>
+  </section>
+
+  <!-- ============ 3. LECCIÓN ============ -->
+  <section id="screen-lesson" class="screen" hidden>
+    <header class="lesson-bar">
+      <button class="btn ghost" id="btn-back" type="button" title="Volver al mapa (Esc)">← Mapa</button>
+      <div class="lesson-title" id="lesson-title"></div>
+      <div class="live">
+        <div id="live-timer-box" hidden><b id="live-timer">0:00</b><span>quedan</span></div>
+        <div><b id="live-wpm">0</b><span>ppm</span></div>
+        <div><b id="live-acc">100</b><span>% precisión</span></div>
+      </div>
+    </header>
+    <div class="progress"><span id="progress-bar"></span></div>
+
+    <div class="stage-area">
+      <div class="text-box" id="text-box"><div class="text" id="text"></div></div>
+      <div class="hint" id="hint"></div>
+      <div class="caps-warning" id="caps-warning" hidden>Tienes activado <b>Bloq Mayús</b>. Desactívalo para seguir.</div>
+      <div class="caps-warning layout-warning" id="layout-warning" hidden></div>
+      <div id="kb" class="kb-wrap"></div>
+      <div id="hands" class="hands"></div>
+
+      <div class="overlay" id="intro">
+        <div class="intro-card">
+          <p class="eyebrow" id="intro-eyebrow"></p>
+          <h2 id="intro-title"></h2>
+          <div class="newkeys" id="intro-keys"></div>
+          <p class="tip" id="intro-tip"></p>
+          <p class="goal" id="intro-goal"></p>
+          <button class="btn primary big" id="btn-start" type="button">Empezar</button>
+          <p class="kbd-help">o pulsa la <kbd>barra espaciadora</kbd></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 3b. LECCIÓN 0: ANTES DE EMPEZAR ============ -->
+  <section id="screen-posture" class="screen" hidden>
+    <header class="lesson-bar">
+      <button class="btn ghost" id="btn-posture-back" type="button">← Mapa</button>
+      <div class="lesson-title"><span>Lección 0</span>Antes de empezar</div>
+      <div class="dots" id="posture-dots"></div>
+    </header>
+    <div class="posture card" id="posture-body"></div>
+    <div class="posture-nav">
+      <button class="btn ghost" id="posture-prev" type="button">← Anterior</button>
+      <button class="btn primary" id="posture-next" type="button">Siguiente →</button>
+    </div>
+  </section>
+
+  <!-- ============ 4. RESULTADOS ============ -->
+  <section id="screen-results" class="screen" hidden>
+    <div class="results card">
+      <div class="stars big" id="res-stars"></div>
+      <h2 id="res-title"></h2>
+      <p id="res-msg" class="res-msg"></p>
+      <div class="stat-grid">
+        <div class="stat"><b id="res-wpm"></b><span>palabras por minuto</span><small id="res-wpm-goal"></small></div>
+        <div class="stat"><b id="res-acc"></b><span>precisión</span><small id="res-acc-goal"></small></div>
+        <div class="stat"><b id="res-time"></b><span>tiempo</span><small id="res-err"></small></div>
+      </div>
+      <div class="res-points" id="res-points"></div>
+      <div class="res-daily" id="res-daily"></div>
+      <div class="weak" id="res-weak"></div>
+      <div class="res-actions">
+        <button class="btn ghost" id="btn-map" type="button">Volver al mapa</button>
+        <button class="btn" id="btn-repeat" type="button">Repetir</button>
+        <button class="btn primary" id="btn-next" type="button">Siguiente lección →</button>
+      </div>
+      <p class="kbd-help"><kbd>Intro</kbd> continuar · <kbd>Esc</kbd> mapa</p>
+    </div>
+  </section>
+
+  <!-- ============ 5. PANEL DEL PROFESOR/A ============ -->
+  <section id="screen-teacher" class="screen" hidden>
+    <header class="topbar">
+      <div class="brand small"><span class="logo">T</span>Teclea</div>
+      <div class="who"><span><b>Panel del profesor/a</b><small id="t-source"></small></span></div>
+      <div class="top-actions">
+        <button class="btn ghost" id="t-reload" type="button">Actualizar</button>
+        <button class="btn ghost" id="t-groups" type="button">Grupos</button>
+        <button class="btn ghost" id="t-codes" type="button">Añadir códigos</button>
+        <button class="btn ghost" id="t-csv" type="button">Descargar CSV</button>
+        <button class="btn ghost" id="t-exit" type="button">Salir</button>
+      </div>
+    </header>
+
+    <div class="t-filters">
+      <label>Grupo <select id="t-group"></select></label>
+      <label>Buscar <input id="t-search" type="search" placeholder="Nombre…"></label>
+      <span class="t-count" id="t-count"></span>
+    </div>
+
+    <div class="summary" id="t-summary"></div>
+
+    <div class="t-table-wrap card">
+      <table class="t-table" id="t-table">
+        <thead><tr>
+          <th data-sort="name">Alumno/a</th>
+          <th data-sort="group">Grupo</th>
+          <th data-sort="next">Va por</th>
+          <th data-sort="passed">Superadas</th>
+          <th data-sort="wpm">Mejor ppm</th>
+          <th data-sort="min">Minutos</th>
+          <th data-sort="week">Esta semana</th>
+          <th data-sort="streak">Racha</th>
+          <th data-sort="pts">Puntos semana</th>
+          <th data-sort="last">Última vez</th>
+          <th>PIN</th>
+          <th>Teclas débiles</th>
+          <th></th>
+        </tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <section class="t-rank card" id="t-rank">
+      <header>
+        <h3>🏆 Ranking de clases esta semana</h3>
+        <p>Media de puntos por alumno de cada grupo (cuentan todos, también los que no han practicado). Se reinicia cada lunes. Ordena la tabla por «Puntos semana» para ver el ranking de alumnos completo.</p>
+      </header>
+      <div id="t-rank-body" class="t-table-wrap"></div>
+    </section>
+
+    <section class="heat-section card">
+      <header>
+        <h3>Teclas del grupo</h3>
+        <p>Errores de todos los alumnos que se ven en la tabla. Útil para saber qué repasar en clase.</p>
+      </header>
+      <div id="t-heat" class="kb-heat"></div>
+      <div class="heat-legend"><span>Pocos errores</span><i></i><span>Muchos errores</span></div>
+    </section>
+  </section>
+</main>
+
+<footer class="credits">Teclea · creado por <b>Juan Luis Torralbo Muñoz</b></footer>
+
+<!-- ============ DIPLOMA (solo se ve al imprimir) ============ -->
+<div id="diploma" class="diploma" aria-hidden="true">
+  <div class="dip-inner">
+    <div class="dip-brand"><span class="logo">T</span>Teclea</div>
+    <p class="dip-pre">Diploma de mecanografía</p>
+    <p class="dip-certifica">Se otorga a</p>
+    <h1 id="dip-name"></h1>
+    <p class="dip-group" id="dip-group"></p>
+    <p class="dip-text">por haber completado el curso de mecanografía y aprendido a escribir con todos los dedos sin mirar el teclado.</p>
+    <p class="dip-adv" id="dip-adv"></p>
+    <div class="dip-stats" id="dip-stats"></div>
+    <p class="dip-credit">Teclea · creado por Juan Luis Torralbo Muñoz</p>
+    <div class="dip-foot">
+      <div><span id="dip-date"></span><small>Fecha</small></div>
+      <div><span id="dip-school"></span><small id="dip-teacher"></small></div>
+    </div>
+  </div>
+</div>
+
+<dialog id="dlg">
+  <div class="dlg">
+    <button class="dlg-close" type="button" data-close aria-label="Cerrar">✕</button>
+    <h2 id="dlg-title"></h2>
+    <div id="dlg-body"></div>
+  </div>
+</dialog>
+
+<script src="js/config.js"></script>
+<script src="js/keyboard.js"></script>
+<script src="js/lessons.js"></script>
+<script src="js/storage.js"></script>
+<script src="js/app.js"></script>
+<script src="js/teacher.js"></script>
+</body>
+</html>
