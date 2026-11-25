@@ -44,5 +44,5 @@ window.CONFIG = {
   // OPCIONAL: URL de la aplicación web de Google Apps Script (ver README).
   // Si está vacía, el progreso solo se guarda en el navegador del alumno.
   // Ejemplo: "https://script.google.com/macros/s/AKfycbx2D5D8ywNy427ElmfIHH19fs9aZ2oc7AjlZqdyq6pIQfSR-Nye5co8qstFPyvwiuCHcA/exec"
-  SYNC_URL: ""
+  SYNC_URL: "https://script.google.com/macros/s/AKfycbx2D5D8ywNy427ElmfIHH19fs9aZ2oc7AjlZqdyq6pIQfSR-Nye5co8qstFPyvwiuCHcA/exec"
 };
